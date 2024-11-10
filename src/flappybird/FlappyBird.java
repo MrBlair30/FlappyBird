@@ -41,13 +41,12 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
     int fireBallY = 0;
 
     //Shield
-    int shieldWidth = birdWidth+20;
-    int shieldHeight = birdHeight+20;
-    int shieldX = 0;
-    int shieldY = 0;
+    int shieldWidth = birdWidth + 20;
+    int shieldHeight = birdHeight + 20;
+    double shieldX = 0;
+    double shieldY = 0;
     int incrementShieldX = 310;
     int incrementShieldY = -55;
-
 
     //Bird class
     class Bird {
@@ -84,10 +83,10 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
     BufferedReader br;
 
     Bird bird;
-    int velocityY = 0;
-    int velocityX = 0;
-    int shieldVelocityX = -1;
-    int gravity = 0;
+    double velocityY = 0;
+    double velocityX = 0;
+    double shieldVelocityX = -1;
+    double gravity = 0;
 
     ArrayList<Pipe> pipes;
 
@@ -166,13 +165,13 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
         g.drawImage(bird.img, bird.x, bird.y, bird.width, bird.height, null);
 
         //Generate shield
-        if(generateShield){
-            g.drawImage(shieldImg, shieldX, shieldY, shieldWidth, shieldHeight, null);
+        if (generateShield) {
+            g.drawImage(shieldImg, (int) shieldX, (int) shieldY, shieldWidth, shieldHeight, null);
         }
 
         //Shield Active
         if (hasShield) {
-            g.drawImage(shieldImg, bird.x - 10, bird.y - 10, shieldWidth,shieldHeight, null);
+            g.drawImage(shieldImg, bird.x - 10, bird.y - 10, shieldWidth, shieldHeight, null);
         }
 
         //pipes
@@ -240,7 +239,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
             if (!pipeDraw.passed && bird.x > pipeDraw.x + pipeDraw.width) {
                 pipeDraw.passed = true;
                 score += 0.5;
-                randomNumber = (int) Math.floor(Math.random() * 10) + 1;
+                randomNumber = (int) Math.floor(Math.random() * 50) + 1;
                 System.out.println(randomNumber);
                 if (randomNumber == 1) {
                     //gameOver = true;
@@ -251,9 +250,11 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
 
                 //Shield generation
                 if (randomNumber == 1) {
-                    shieldX = pipeDraw.x+incrementShieldX;
-                    shieldY = (randomYTopPipe + pipeDraw.height) + incrementShieldY;
-                    generateShield = true;                    
+                    if (!generateShield) {
+                        shieldX = pipeDraw.x + incrementShieldX;
+                        shieldY = (randomYTopPipe + pipeDraw.height) + incrementShieldY;
+                        generateShield = true;
+                    }
                 }
 
                 try {
@@ -270,26 +271,27 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
             if (collision(bird, pipeDraw)) {
                 gameOver = true;
             }
-            
+
             //Shield
-            if(bird.x < shieldX + shieldWidth &&
-               bird.x + bird.width > shieldX &&
-               bird.y < shieldY + shieldHeight &&
-               bird.y + bird.height > shieldY){
-                
-                System.out.println("Shield X: "+shieldX+" Shield Y: "+shieldY);
-                System.out.println("Bird X: "+bird.x+" Bird Y: "+bird.y);
-                if(generateShield){
+            if (bird.x < shieldX + shieldWidth
+                    && bird.x + bird.width > shieldX
+                    && bird.y < shieldY + shieldHeight
+                    && bird.y + bird.height > shieldY) {
+
+                //System.out.println("Shield X: " + shieldX + " Shield Y: " + shieldY);
+                //System.out.println("Bird X: " + bird.x + " Bird Y: " + bird.y);
+                if (generateShield) {
                     hasShield = true;
                 }
                 generateShield = false;
             }
-            
-            if(generateShield){
+
+            if (generateShield) {
                 shieldX += shieldVelocityX;
-            }
-            
-            
+                //System.out.println("*********************************** SHIELD X VELOCITY: " + shieldVelocityX + " *****************************************");
+                if (shieldX > boardWidth) {
+                    generateShield = false;                 }
+                }
 
         }//end for
 
@@ -303,12 +305,13 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
         } else if (fireBallY != (bird.y - 32)) {
             fireBallY += 2;
             //System.out.println("Fire ball position: "+fireBallY+" Bird position: "+(bird.y-32));
-            if (fireBallY > bird.y - 32) {                
-                if(!hasShield){
-                    gameOver = true;
-                    
+            if (fireBallY > bird.y - 32) {
+                if (!hasShield) {
+                    activateObstacle = false;
+                    //gameOver = true;
                     fireBallY = 0;
-                }else{
+                    repaint();
+                } else {
                     activateObstacle = false;
                     hasShield = false;
                     fireBallY = 0;
@@ -317,13 +320,15 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
         }
 
         //Reverse generation
-        if (score == 10) {
+        if (score == 100) {
             pipeX = 0;
             bird.x = 290;
             velocityX = 4;
-            shieldVelocityX = 1;
-            incrementShieldX = 80;            
+            shieldVelocityX = 0.5;
+            incrementShieldX = 40;
             pipes.clear();
+            activateObstacle = false;
+            generateShield = false;
         }
 
     }
