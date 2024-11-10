@@ -286,12 +286,17 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
                 generateShield = false;
             }
 
-            if (generateShield) {
+            if (generateShield) {                
                 shieldX += shieldVelocityX;
                 //System.out.println("*********************************** SHIELD X VELOCITY: " + shieldVelocityX + " *****************************************");
                 if (shieldX > boardWidth) {
-                    generateShield = false;                 }
+                    generateShield = false;
                 }
+            }
+            
+            if(!generateShield){
+                
+            }
 
         }//end for
 
@@ -308,7 +313,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
             if (fireBallY > bird.y - 32) {
                 if (!hasShield) {
                     activateObstacle = false;
-                    //gameOver = true;
+                    gameOver = true;
                     fireBallY = 0;
                     repaint();
                 } else {
@@ -324,9 +329,12 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
             pipeX = 0;
             bird.x = 290;
             velocityX = 4;
-            shieldVelocityX = 0.5;
-            incrementShieldX = 40;
-            pipes.clear();
+            //shieldVelocityX = 1;
+            //incrementShieldX = 80;
+            pipes.clear();            
+            bird.img = new ImageIcon(getClass().getResource("flappybird-reverse.png")).getImage();
+        }
+        if(score >= 100){
             activateObstacle = false;
             generateShield = false;
         }
@@ -418,6 +426,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
                 blinkTimer.start();
                 gameLoop.start();
                 placePipesTimer.start();
+                bird.img = new ImageIcon(getClass().getResource("flappybird.png")).getImage();
             }
         }
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
